@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel — Bagru Vastrakala</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --indigo: #1E2A6B;
+      --indigo-dark: #141D4E;
+      --terracotta: #C4622D;
+      --gold: #B8963E;
+      --ivory: #FAF7F2;
+      --ivory-dark: #F0EAE0;
+      --cream: #E8DFD0;
+      --green: #2E7D32;
+      --red: #C62828;
+      --warm-gray: #8A7D70;
+      --text: #2A2016;
+      --radius: 10px;
+      --shadow: 0 4px 20px rgba(30,42,107,0.10);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "DM Sans", sans-serif; background: #F4F6FB; color: var(--text); min-height: 100vh; }
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; font-family: inherit; }
+    input, textarea, select { font-family: inherit; }
+
+    /* ── LOGIN ── */
+    #loginScreen {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; background: var(--indigo-dark);
+    }
+    .login-box {
+      background: white; border-radius: 20px; padding: 48px 40px;
+      width: min(400px, 92vw); box-shadow: 0 24px 80px rgba(0,0,0,0.3); text-align: center;
+    }
+    .login-box h1 { font-size: 26px; color: var(--indigo); margin-bottom: 6px; }
+    .login-box p  { font-size: 14px; color: var(--warm-gray); margin-bottom: 32px; }
+    .login-box input {
+      width: 100%; padding: 14px 16px; border: 2px solid var(--ivory-dark);
+      border-radius: var(--radius); font-size: 16px; margin-bottom: 14px;
+    }
+    .login-box input:focus { outline: none; border-color: var(--indigo); }
+    .login-box button {
+      width: 100%; padding: 15px; background: var(--indigo); color: white;
+      font-size: 15px; font-weight: 600; border: none; border-radius: 60px;
+      transition: background 0.2s;
+    }
+    .login-box button:hover { background: var(--indigo-dark); }
+    .login-error { color: var(--red); font-size: 13px; margin-top: 10px; display: none; }
+
+    /* ── LAYOUT ── */
+    #adminApp { display: none; }
+    .topbar {
+      background: var(--indigo); color: white; padding: 0 28px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px; position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+    }
+    .topbar-brand { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+    .topbar-brand span { font-size: 12px; opacity: 0.6; font-weight: 400; }
+    .topbar-right { display: flex; align-items: center; gap: 16px; }
+    .topbar-link { font-size: 13px; color: rgba(255,255,255,0.7); cursor: pointer; transition: color 0.2s; }
+    .topbar-link:hover { color: white; }
+    .logout-btn {
+      background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);
+      padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; transition: background 0.2s;
+    }
+    .logout-btn:hover { background: rgba(255,255,255,0.2); }
+
+    .main { max-width: 1300px; margin: 0 auto; padding: 32px 24px; }
+
+    /* ── STATS ── */
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 32px; }
+    .stat-card {
+      background: white; border-radius: var(--radius); padding: 24px 20px;
+      box-shadow: var(--shadow); display: flex; align-items: center; gap: 16px;
+    }
+    .stat-icon { font-size: 32px; }
+    .stat-num { font-size: 28px; font-weight: 700; color: var(--indigo); line-height: 1; }
+    .stat-label { font-size: 12px; color: var(--warm-gray); margin-top: 4px; }
+
+    /* ── SECTION HEADER ── */
+    .section-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+    }
+    .section-bar h2 { font-size: 20px; color: var(--indigo); }
+    .btn-add {
+      background: var(--indigo); color: white; padding: 10px 22px;
+      border-radius: 60px; font-size: 14px; font-weight: 600; border: none;
+      display: flex; align-items: center; gap: 8px; transition: background 0.2s;
+    }
+    .btn-add:hover { background: var(--indigo-dark); }
+
+    /* ── SEARCH / FILTER ── */
+    .toolbar {
+      display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+    }
+    .toolbar input, .toolbar select {
+      padding: 10px 14px; border: 2px solid var(--ivory-dark);
+      border-radius: var(--radius); font-size: 14px; background: white;
+    }
+    .toolbar input { flex: 1; min-width: 200px; }
+    .toolbar input:focus, .toolbar select:focus { outline: none; border-color: var(--indigo); }
+
+    /* ── PRODUCT TABLE ── */
+    .table-wrap { background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: var(--indigo); }
+    thead th { color: white; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; padding: 14px 16px; text-align: left; }
+    tbody tr { border-bottom: 1px solid var(--ivory-dark); transition: background 0.15s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--ivory); }
+    tbody td { padding: 14px 16px; font-size: 14px; vertical-align: middle; }
+    .prod-thumb {
+      width: 54px; height: 64px; border-radius: 8px; object-fit: cover;
+      background: var(--ivory-dark);
+    }
+    .prod-name { font-weight: 500; color: var(--indigo); max-width: 220px; line-height: 1.4; }
+    .cat-badge {
+      display: inline-block; padding: 3px 10px; border-radius: 20px;
+      font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .cat-dupatta   { background: #E8EAF6; color: #3949AB; }
+    .cat-mulmul    { background: #FCE4EC; color: #AD1457; }
+    .cat-saree     { background: #FFF3E0; color: #E65100; }
+    .cat-indigo    { background: #E3F2FD; color: #1565C0; }
+    .cat-sanganeri { background: #F3E5F5; color: #6A1B9A; }
+    .stock-yes { color: var(--green); font-weight: 600; font-size: 13px; }
+    .stock-no  { color: var(--red);   font-weight: 600; font-size: 13px; }
+    .action-btns { display: flex; gap: 8px; }
+    .btn-edit {
+      padding: 7px 14px; background: var(--indigo); color: white;
+      border: none; border-radius: 6px; font-size: 12px; font-weight: 600; transition: background 0.2s;
+    }
+    .btn-edit:hover { background: var(--indigo-dark); }
+    .btn-delete {
+      padding: 7px 14px; background: #FFF; color: var(--red);
+      border: 2px solid #FFCDD2; border-radius: 6px; font-size: 12px; font-weight: 600; transition: all 0.2s;
+    }
+    .btn-delete:hover { background: var(--red); color: white; border-color: var(--red); }
+    .btn-toggle {
+      padding: 7px 14px; background: #FFF; color: var(--warm-gray);
+      border: 2px solid var(--cream); border-radius: 6px; font-size: 12px; font-weight: 600; transition: all 0.2s;
+    }
+    .btn-toggle:hover { background: var(--cream); }
+
+    /* ── MODAL ── */
+    .modal-bg {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55); z-index: 1000;
+      align-items: center; justify-content: center;
+    }
+    .modal-bg.open { display: flex; }
+    .modal-box {
+      background: white; border-radius: 20px; padding: 36px;
+      width: min(680px, 95vw); max-height: 92vh; overflow-y: auto;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+    }
+    .modal-box h2 { font-size: 22px; color: var(--indigo); margin-bottom: 24px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group label { font-size: 12px; font-weight: 700; color: var(--warm-gray); text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-group input, .form-group textarea, .form-group select {
+      padding: 12px 14px; border: 2px solid var(--ivory-dark);
+      border-radius: var(--radius); font-size: 15px; color: var(--text);
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      outline: none; border-color: var(--indigo);
+    }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+    .img-preview {
+      width: 100%; max-height: 180px; object-fit: contain;
+      background: var(--ivory); border-radius: var(--radius);
+      padding: 8px; margin-top: 8px; display: none;
+    }
+    .modal-actions { display: flex; gap: 12px; margin-top: 28px; justify-content: flex-end; }
+    .btn-save {
+      padding: 13px 32px; background: var(--indigo); color: white;
+      border: none; border-radius: 60px; font-size: 15px; font-weight: 600; transition: background 0.2s;
+    }
+    .btn-save:hover { background: var(--indigo-dark); }
+    .btn-cancel {
+      padding: 13px 24px; background: white; color: var(--warm-gray);
+      border: 2px solid var(--cream); border-radius: 60px; font-size: 15px; transition: all 0.2s;
+    }
+    .btn-cancel:hover { background: var(--cream); }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; z-index: 9999;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--indigo-dark); color: white;
+      padding: 13px 24px; border-radius: 60px; font-size: 14px; font-weight: 500;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+      pointer-events: none; white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── EMPTY STATE ── */
+    .empty { text-align: center; padding: 60px; color: var(--warm-gray); font-size: 15px; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .topbar-brand span { display: none; }
+      thead th:nth-child(4), tbody td:nth-child(4),
+      thead th:nth-child(5), tbody td:nth-child(5) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════ LOGIN SCREEN ═══════ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div style="font-size:48px;margin-bottom:16px">🌿</div>
+    <h1>Bagru Vastrakala</h1>
+    <p>Admin Panel — enter your password to continue</p>
+    <input type="password" id="passwordInput" placeholder="Enter admin password" onkeydown="if(event.key==='Enter') doLogin()" />
+    <button onclick="doLogin()">Login →</button>
+    <p class="login-error" id="loginError">❌ Wrong password. Try again.</p>
+    <p style="margin-top:20px;font-size:12px;color:#ccc">Default password: <strong>bagru2025</strong></p>
+  </div>
+</div>
+
+<!-- ═══════ ADMIN APP ═══════ -->
+<div id="adminApp">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-brand">
+      🌿 Bagru Vastrakala <span>Admin Panel</span>
+    </div>
+    <div class="topbar-right">
+      <a href="/" target="_blank" class="topbar-link">🌐 View Website</a>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- Stats -->
+    <div class="stats" id="statsBar"></div>
+
+    <!-- Products Section -->
+    <div class="section-bar">
+      <h2>📦 All Products</h2>
+      <button class="btn-add" onclick="openAddModal()">
+        + Add New Product
+      </button>
+    </div>
+
+    <!-- Search & Filter -->
+    <div class="toolbar">
+      <input type="text" id="searchBox" placeholder="🔍 Search by name…" oninput="renderTable()" />
+      <select id="filterCat" onchange="renderTable()">
+        <option value="all">All Categories</option>
+        <option value="dupatta">Cotton Dupatta Sets</option>
+        <option value="mulmul">Mulmul Sarees</option>
+        <option value="saree">Kota Doriya Sarees</option>
+        <option value="indigo">Indigo Fabrics</option>
+        <option value="sanganeri">Sanganeri Fabrics</option>
+      </select>
+      <select id="filterStock" onchange="renderTable()">
+        <option value="all">All Stock</option>
+        <option value="yes">In Stock</option>
+        <option value="no">Out of Stock</option>
+      </select>
+    </div>
+
+    <!-- Products Table -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Product Name</th>
+            <th>Category</th>
+            <th>Sale Price</th>
+            <th>Original</th>
+            <th>Badge</th>
+            <th>Stock</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="productTable"></tbody>
+      </table>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /adminApp -->
+
+<!-- ═══════ EDIT/ADD MODAL ═══════ -->
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this) closeModal()">
+  <div class="modal-box">
+    <h2 id="modalTitle">Add New Product</h2>
+    <div class="form-grid">
+      <input type="hidden" id="editId" value="" />
+
+      <div class="form-group full">
+        <label>Product Name *</label>
+        <input type="text" id="fName" placeholder="e.g. Classic Purple Cotton Suit With Dupatta" />
+      </div>
+
+      <div class="form-group">
+        <label>Category *</label>
+        <select id="fCategory">
+          <option value="dupatta">Cotton Dupatta Set</option>
+          <option value="mulmul">Mulmul Saree</option>
+          <option value="saree">Kota Doriya Saree</option>
+          <option value="indigo">Indigo Fabric</option>
+          <option value="sanganeri">Sanganeri Fabric</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>In Stock?</label>
+        <select id="fStock">
+          <option value="true">✅ Yes — In Stock</option>
+          <option value="false">❌ No — Out of Stock</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Sale Price (₹) *</label>
+        <input type="number" id="fPrice" placeholder="e.g. 1099" min="1" />
+      </div>
+
+      <div class="form-group">
+        <label>Original Price (₹) *</label>
+        <input type="number" id="fOriginal" placeholder="e.g. 2298" min="1" oninput="calcBadge()" />
+      </div>
+
+      <div class="form-group full">
+        <label>Discount Badge (auto-calculated)</label>
+        <input type="text" id="fBadge" placeholder="e.g. 52% OFF" />
+      </div>
+
+      <div class="form-group full">
+        <label>Image URL *</label>
+        <input type="url" id="fImg" placeholder="https://…/image.jpg" oninput="previewImg()" />
+        <img id="imgPreview" class="img-preview" alt="Preview" />
+        <small style="color:var(--warm-gray);font-size:12px;margin-top:4px">
+          💡 Tip: Upload image to <a href="https://imgur.com" target="_blank" style="color:var(--indigo)">imgur.com</a> or 
+          <a href="https://postimages.org" target="_blank" style="color:var(--indigo)">postimages.org</a> and paste the link here
+        </small>
+      </div>
+
+      <div class="form-group full">
+        <label>Description</label>
+        <textarea id="fDesc" rows="3" placeholder="Brief description of the product…"></textarea>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveProduct()">💾 Save Product</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────
+const ADMIN_PASSWORD = "bagru2025"; // ← Change this!
+
+const CAT_LABELS = {
+  dupatta:   "Cotton Dupatta Set",
+  mulmul:    "Mulmul Saree",
+  saree:     "Kota Doriya Saree",
+  indigo:    "Indigo Fabric",
+  sanganeri: "Sanganeri Fabric",
+};
+
+// ── STATE ────────────────────────────────────────────────
+let products = [];
+let editingId = null;
+
+// ── LOGIN ────────────────────────────────────────────────
+function doLogin() {
+  const pw = document.getElementById("passwordInput").value;
+  if (pw === ADMIN_PASSWORD) {
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("adminApp").style.display   = "block";
+    loadProducts();
+  } else {
+    document.getElementById("loginError").style.display = "block";
+    document.getElementById("passwordInput").value = "";
+    document.getElementById("passwordInput").focus();
+  }
+}
+
+function logout() {
+  document.getElementById("loginScreen").style.display = "flex";
+  document.getElementById("adminApp").style.display   = "none";
+  document.getElementById("passwordInput").value = "";
+}
+
+// ── LOAD PRODUCTS from server ────────────────────────────
+async function loadProducts() {
+  try {
+    const res  = await fetch("/api/products");
+    products   = await res.json();
+    renderStats();
+    renderTable();
+  } catch (e) {
+    showToast("❌ Could not load products from server");
+    console.error(e);
+  }
+}
+
+// ── STATS BAR ────────────────────────────────────────────
+function renderStats() {
+  const total   = products.length;
+  const inStock = products.filter(p => p.inStock).length;
+  const cats    = new Set(products.map(p => p.category)).size;
+  const lowest  = Math.min(...products.map(p => p.price));
+
+  document.getElementById("statsBar").innerHTML = `
+    <div class="stat-card">
+      <div class="stat-icon">📦</div>
+      <div><div class="stat-num">${total}</div><div class="stat-label">Total Products</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div><div class="stat-num">${inStock}</div><div class="stat-label">In Stock</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🏷️</div>
+      <div><div class="stat-num">${total - inStock}</div><div class="stat-label">Out of Stock</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🗂️</div>
+      <div><div class="stat-num">${cats}</div><div class="stat-label">Categories</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">💰</div>
+      <div><div class="stat-num">₹${lowest.toLocaleString("en-IN")}</div><div class="stat-label">Lowest Price</div></div>
+    </div>
+  `;
+}
+
+// ── RENDER TABLE ─────────────────────────────────────────
+function renderTable() {
+  const q       = document.getElementById("searchBox").value.toLowerCase();
+  const catF    = document.getElementById("filterCat").value;
+  const stockF  = document.getElementById("filterStock").value;
+
+  let filtered = products.filter(p => {
+    const matchQ     = p.name.toLowerCase().includes(q);
+    const matchCat   = catF   === "all" || p.category === catF;
+    const matchStock = stockF === "all"
+      || (stockF === "yes" && p.inStock)
+      || (stockF === "no"  && !p.inStock);
+    return matchQ && matchCat && matchStock;
+  });
+
+  const tbody = document.getElementById("productTable");
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty">No products match your filters.</div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(p => `
+    <tr id="row-${p.id}">
+      <td>
+        <img class="prod-thumb" src="${p.img}" alt="${p.name}"
+             onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2254%22 height=%2264%22><rect width=%2254%22 height=%2264%22 fill=%22%23F0EAE0%22/><text x=%2227%22 y=%2238%22 font-size=%2224%22 text-anchor=%22middle%22>🧵</text></svg>'" />
+      </td>
+      <td><div class="prod-name">${p.name}</div></td>
+      <td><span class="cat-badge cat-${p.category}">${CAT_LABELS[p.category] || p.category}</span></td>
+      <td><strong style="color:var(--indigo)">₹${p.price.toLocaleString("en-IN")}</strong></td>
+      <td><span style="text-decoration:line-through;color:var(--warm-gray)">₹${p.original.toLocaleString("en-IN")}</span></td>
+      <td><span style="background:#E8F5E9;color:#2E7D32;padding:3px 8px;border-radius:4px;font-size:12px;font-weight:700">${p.badge}</span></td>
+      <td><span class="${p.inStock ? 'stock-yes' : 'stock-no'}">${p.inStock ? '✅ Yes' : '❌ No'}</span></td>
+      <td>
+        <div class="action-btns">
+          <button class="btn-edit"   onclick="openEditModal(${p.id})">✏️ Edit</button>
+          <button class="btn-toggle" onclick="toggleStock(${p.id})">${p.inStock ? 'Mark Out' : 'Mark In'}</button>
+          <button class="btn-delete" onclick="deleteProduct(${p.id})">🗑 Del</button>
+        </div>
+      </td>
+    </tr>
+  `).join("");
+}
+
+// ── OPEN ADD MODAL ───────────────────────────────────────
+function openAddModal() {
+  editingId = null;
+  document.getElementById("modalTitle").textContent = "➕ Add New Product";
+  document.getElementById("editId").value    = "";
+  document.getElementById("fName").value     = "";
+  document.getElementById("fCategory").value = "dupatta";
+  document.getElementById("fPrice").value    = "";
+  document.getElementById("fOriginal").value = "";
+  document.getElementById("fBadge").value    = "";
+  document.getElementById("fImg").value      = "";
+  document.getElementById("fDesc").value     = "";
+  document.getElementById("fStock").value    = "true";
+  document.getElementById("imgPreview").style.display = "none";
+  document.getElementById("modalBg").classList.add("open");
+}
+
+// ── OPEN EDIT MODAL ──────────────────────────────────────
+function openEditModal(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  editingId = id;
+  document.getElementById("modalTitle").textContent = "✏️ Edit Product";
+  document.getElementById("editId").value    = p.id;
+  document.getElementById("fName").value     = p.name;
+  document.getElementById("fCategory").value = p.category;
+  document.getElementById("fPrice").value    = p.price;
+  document.getElementById("fOriginal").value = p.original;
+  document.getElementById("fBadge").value    = p.badge;
+  document.getElementById("fImg").value      = p.img;
+  document.getElementById("fDesc").value     = p.desc || "";
+  document.getElementById("fStock").value    = p.inStock ? "true" : "false";
+  previewImg();
+  document.getElementById("modalBg").classList.add("open");
+}
+
+function closeModal() {
+  document.getElementById("modalBg").classList.remove("open");
+}
+
+// ── AUTO-CALC BADGE ──────────────────────────────────────
+function calcBadge() {
+  const price    = parseFloat(document.getElementById("fPrice").value);
+  const original = parseFloat(document.getElementById("fOriginal").value);
+  if (price > 0 && original > 0 && original > price) {
+    const pct = Math.round(((original - price) / original) * 100);
+    document.getElementById("fBadge").value = pct + "% OFF";
+  }
+}
+
+// ── PREVIEW IMAGE ────────────────────────────────────────
+function previewImg() {
+  const url  = document.getElementById("fImg").value.trim();
+  const prev = document.getElementById("imgPreview");
+  if (url) {
+    prev.src           = url;
+    prev.style.display = "block";
+    prev.onerror       = () => prev.style.display = "none";
+  } else {
+    prev.style.display = "none";
+  }
+}
+
+// ── SAVE PRODUCT ─────────────────────────────────────────
+async function saveProduct() {
+  const name     = document.getElementById("fName").value.trim();
+  const category = document.getElementById("fCategory").value;
+  const price    = parseFloat(document.getElementById("fPrice").value);
+  const original = parseFloat(document.getElementById("fOriginal").value);
+  const badge    = document.getElementById("fBadge").value.trim() || `${Math.round(((original-price)/original)*100)}% OFF`;
+  const img      = document.getElementById("fImg").value.trim();
+  const desc     = document.getElementById("fDesc").value.trim();
+  const inStock  = document.getElementById("fStock").value === "true";
+
+  if (!name || !category || !price || !original || !img) {
+    showToast("⚠️ Please fill Name, Category, Prices and Image URL");
+    return;
+  }
+
+  const payload = { name, category, price, original, badge, img, desc, inStock };
+
+  try {
+    let res, data;
+    if (editingId) {
+      res  = await fetch(`/api/admin/products/${editingId}`, { method: "PUT", headers: { "Content-Type": "application/json", "x-admin-pass": ADMIN_PASSWORD }, body: JSON.stringify(payload) });
+      data = await res.json();
+      if (data.success) {
+        const idx = products.findIndex(p => p.id === editingId);
+        if (idx !== -1) products[idx] = data.product;
+        showToast("✅ Product updated successfully!");
+      }
+    } else {
+      res  = await fetch("/api/admin/products", { method: "POST", headers: { "Content-Type": "application/json", "x-admin-pass": ADMIN_PASSWORD }, body: JSON.stringify(payload) });
+      data = await res.json();
+      if (data.success) {
+        products.push(data.product);
+        showToast("✅ New product added!");
+      }
+    }
+    closeModal();
+    renderStats();
+    renderTable();
+  } catch (e) {
+    showToast("❌ Error saving product");
+    console.error(e);
+  }
+}
+
+// ── DELETE PRODUCT ───────────────────────────────────────
+async function deleteProduct(id) {
+  const p = products.find(x => x.id === id);
+  if (!confirm(`Delete "${p?.name}"?\n\nThis cannot be undone.`)) return;
+  try {
+    const res  = await fetch(`/api/admin/products/${id}`, { method: "DELETE", headers: { "x-admin-pass": ADMIN_PASSWORD } });
+    const data = await res.json();
+    if (data.success) {
+      products = products.filter(x => x.id !== id);
+      renderStats();
+      renderTable();
+      showToast("🗑️ Product deleted");
+    }
+  } catch (e) {
+    showToast("❌ Error deleting product");
+  }
+}
+
+// ── TOGGLE STOCK ─────────────────────────────────────────
+async function toggleStock(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  try {
+    const res  = await fetch(`/api/admin/products/${id}`, {
+      method:  "PUT",
+      headers: { "Content-Type": "application/json", "x-admin-pass": ADMIN_PASSWORD },
+      body:    JSON.stringify({ ...p, inStock: !p.inStock }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      const idx = products.findIndex(x => x.id === id);
+      if (idx !== -1) products[idx] = data.product;
+      renderStats();
+      renderTable();
+      showToast(data.product.inStock ? "✅ Marked In Stock" : "❌ Marked Out of Stock");
+    }
+  } catch (e) {
+    showToast("❌ Error updating stock");
+  }
+}
+
+// ── TOAST ─────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove("show"), 3000);
+}
+
+// Auto-calc badge when price changes
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("fPrice").addEventListener("input", calcBadge);
+});
+</script>
+</body>
+</html>

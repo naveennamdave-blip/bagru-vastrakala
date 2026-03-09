@@ -88,6 +88,12 @@ function adminAuth(req, res, next) {
 // =========================================================
 // PUBLIC ROUTES
 // =========================================================
+// ─── SITEMAP ──────────────────────────────────────────────
+app.get("/sitemap.xml", (_req, res) => {
+  res.setHeader("Content-Type", "application/xml");
+  res.sendFile(path.join(__dirname, "public", "sitemap.xml"));
+});
+
 app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
 
 app.get("/api/products", (_req, res) => res.json(loadProducts()));

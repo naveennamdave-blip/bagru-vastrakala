@@ -257,8 +257,15 @@ function toggleCart() {
 
 function checkout() {
   if (cart.length === 0) { showToast("Your cart is empty!"); return; }
-  const total   = cart.reduce((s, i) => s + i.price * i.qty, 0);
-  const lines   = cart.map(i => `• ${i.name} ×${i.qty} = ₹${(i.price * i.qty).toLocaleString("en-IN")}`).join("\n");
+  const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+
+  // Build each order line WITH image URL so WhatsApp shows product image
+  const lines = cart.map(i => {
+    const itemLine = `• *${i.name}* ×${i.qty} = ₹${(i.price * i.qty).toLocaleString("en-IN")}`;
+    const imgLine  = i.img ? `  🖼️ ${i.img}` : "";
+    return imgLine ? `${itemLine}\n${imgLine}` : itemLine;
+  }).join("\n\n");
+
   const message = `Hello BagruParampara! 🙏\n\nI'd like to place an order:\n\n${lines}\n\n*Total: ₹${total.toLocaleString("en-IN")}*\n\nPlease confirm availability and share payment/delivery details. Thank you!`;
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
 }

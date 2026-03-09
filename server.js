@@ -116,8 +116,7 @@ app.post("/api/contact", async (req, res) => {
           <tr><td style="padding:8px;font-weight:bold;color:#555;width:100px">Name</td><td style="padding:8px">${name}</td></tr>
           <tr style="background:#f9f9f9"><td style="padding:8px;font-weight:bold;color:#555">Email</td><td style="padding:8px"><a href="mailto:${email}">${email}</a></td></tr>
           <tr><td style="padding:8px;font-weight:bold;color:#555">Phone</td><td style="padding:8px">${phone || "Not given"}</td></tr>
-          <tr style="background:#f9f9f9"><td style="padding:8px;font-weight:bold;color:#555;vertical-align:top">Message</td><td style="padding:8px">${message.replace(/
-/g,"<br>")}</td></tr>
+          <tr style="background:#f9f9f9"><td style="padding:8px;font-weight:bold;color:#555;vertical-align:top">Message</td><td style="padding:8px">${message.split("\n").join("<br>")}</td></tr>
         </table>
         <p style="color:#999;font-size:12px;margin-top:20px">Received: ${new Date().toLocaleString("en-IN",{timeZone:"Asia/Kolkata"})} IST</p>
       </div>`,

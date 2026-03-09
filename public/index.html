@@ -5,16 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- SEO -->
-  <title>Bagru Vastrakala – Handcrafted Heritage Textiles from Jaipur</title>
+  <title>BagruParampara – Handcrafted Heritage Textiles from Jaipur</title>
   <meta name="description" content="Shop authentic Bagru block-printed sarees, Mulmul sarees, Kota Doriya sarees, and dupatta sets. Handcrafted by artisans in Jaipur, Rajasthan. Cash on delivery available." />
   <meta name="keywords" content="Bagru print saree, block print dupatta, Kota Doriya saree, Mulmul saree, Jaipur textiles, handcrafted saree, natural dye fabric" />
-  <meta name="author" content="Bagru Vastrakala" />
+  <meta name="author" content="BagruParampara" />
   <meta name="google-site-verification" content="YSb-jXuFPsF-cl4syZ9vADB6CbFStVXxVisr4R3tAnQ" />
 
   <!-- Open Graph -->
-  <meta property="og:title" content="Bagru Vastrakala – Heritage Textiles from Jaipur" />
+  <meta property="og:title" content="BagruParampara – Heritage Textiles from Jaipur" />
   <meta property="og:description" content="Authentic Bagru block-printed textiles. Sarees, dupatta sets & fabrics. COD available." />
-  <meta property="og:image" content="https://bagruvastrakala.com/wp-content/uploads/2025/07/logo.png" />
+  <meta property="og:image" content="/logo.png" />
   <meta property="og:url" content="https://bagruvastrakala.com" />
   <meta property="og:type" content="website" />
 
@@ -55,10 +55,10 @@
 
     <!-- Logo -->
     <a href="#" class="logo">
-      <img src="https://bagruvastrakala.com/wp-content/uploads/2025/07/logo.png"
-           alt="Bagru Vastrakala" width="120" height="40" loading="eager"
+      <img src="/logo.png"
+           alt="BagruParampara" loading="eager"
            onerror="this.style.display='none'; this.nextElementSibling.style.display='block'" />
-      <span class="logo-text" style="display:none">Bagru Vastrakala</span>
+      <span class="logo-text" style="display:none">BagruParampara</span>
     </a>
 
     <!-- Desktop Nav -->
@@ -104,7 +104,7 @@
 <!-- Mobile Nav Drawer -->
 <nav class="mobile-nav" id="mobileNav">
   <button class="mobile-nav-close" id="mobileNavClose">✕</button>
-  <img src="https://bagruvastrakala.com/wp-content/uploads/2025/07/logo.png" alt="Logo" class="mobile-nav-logo" />
+  <img src="/logo.png" alt="Logo" class="mobile-nav-logo" />
   <a href="#hero"        onclick="closeMobileNav()">Home</a>
   <a href="#collections" onclick="closeMobileNav()">Collections</a>
   <a href="#products"    onclick="closeMobileNav()">Shop</a>
@@ -217,14 +217,21 @@
     <h2 class="section-title">Featured Products</h2>
   </div>
 
-  <!-- Filter Tabs -->
-  <div class="filter-tabs">
-    <button class="tab active" onclick="filterProducts('all', this)">All</button>
-    <button class="tab" onclick="filterProducts('dupatta', this)">Dupatta Sets</button>
-    <button class="tab" onclick="filterProducts('mulmul',  this)">Mulmul Sarees</button>
-    <button class="tab" onclick="filterProducts('saree',   this)">Kota Doriya</button>
-    <button class="tab" onclick="filterProducts('indigo',  this)">Indigo</button>
-    <button class="tab" onclick="filterProducts('sanganeri', this)">Sanganeri</button>
+  <!-- Filter Tabs + Sort -->
+  <div class="filter-bar">
+    <div class="filter-tabs">
+      <button class="tab active" onclick="filterProducts('all', this)">All</button>
+      <button class="tab" onclick="filterProducts('dupatta', this)">Dupatta Sets</button>
+      <button class="tab" onclick="filterProducts('mulmul',  this)">Mulmul Sarees</button>
+      <button class="tab" onclick="filterProducts('saree',   this)">Kota Doriya</button>
+      <button class="tab" onclick="filterProducts('indigo',  this)">Indigo</button>
+      <button class="tab" onclick="filterProducts('sanganeri', this)">Sanganeri</button>
+    </div>
+    <select id="sortSelect" onchange="sortProducts()" class="sort-select">
+      <option value="default">Sort By</option>
+      <option value="low-high">💰 Price: Low to High</option>
+      <option value="high-low">💎 Price: High to Low</option>
+    </select>
   </div>
 
   <!-- Products Grid -->
@@ -236,13 +243,13 @@
 ════════════════════════════════════════════ -->
 <section class="about" id="about">
   <div class="about-img">
-    <img src="https://bagruvastrakala.com/wp-content/uploads/2025/07/collection.jpg" alt="Our artisans at work" loading="lazy" />
+    <img src="/about-craft.png" alt="Bagru block printing craftsman at work" loading="lazy" />
   </div>
   <div class="about-text">
     <p class="section-label">Our Heritage</p>
     <h2>Rooted in the Art of<br><em>Bagru Block Printing</em></h2>
     <p>Bagru is a small town on the outskirts of Jaipur, Rajasthan — and the birthplace of one of India's most celebrated craft traditions. For centuries, artisans here have passed down the art of hand block-printing, using hand-carved wooden blocks, natural plant-based dyes, and pure cotton fabrics.</p>
-    <p>At Bagru Vastrakala, we work directly with these artisan families to bring their craft to customers across India — preserving livelihoods, culture, and the extraordinary beauty of handmade textiles.</p>
+    <p>At BagruParampara, we work directly with these artisan families to bring their craft to customers across India — preserving livelihoods, culture, and the extraordinary beauty of handmade textiles.</p>
     <div class="about-values">
       <div class="aval">
         <span>🌿</span>
@@ -308,14 +315,14 @@
           <span>📞</span>
           <div>
             <strong>Call / WhatsApp</strong>
-            <p><a href="tel:+919887489668">+91 9887489668</a></p>
+            <p><a href="tel:+919376542891">+91 9376542891</a></p>
           </div>
         </div>
         <div class="cdet">
           <span>✉️</span>
           <div>
             <strong>Email</strong>
-            <p><a href="mailto:support@bagruvastrakala.com">support@bagruvastrakala.com</a></p>
+            <p><a href="mailto:bagruparampara@gmailcom">bagruparampara@gmail.com</a></p>
           </div>
         </div>
         <div class="cdet">
@@ -353,7 +360,7 @@
       </div>
       <div class="form-group">
         <label>Phone Number</label>
-        <input type="tel" placeholder="+91 98XXX XXXXX" />
+        <input type="tel" placeholder="+91 9XXXX XXXXX" />
       </div>
       <div class="form-group">
         <label>Message *</label>
@@ -373,7 +380,7 @@
 <footer class="footer">
   <div class="footer-inner">
     <div class="footer-brand">
-      <img src="https://bagruvastrakala.com/wp-content/uploads/2025/07/logo.png" alt="Bagru Vastrakala" width="100" />
+      <img src="/logo.png" alt="BagruParampara" width="100" />
       <p>Bringing the heritage of Bagru block printing to your wardrobe. Every purchase supports artisan families in Rajasthan.</p>
     </div>
     <div class="footer-col">
@@ -400,7 +407,7 @@
     </div>
   </div>
   <div class="footer-bottom">
-    <p>© 2025 Bagru Vastrakala. All rights reserved. | Handcrafted with ❤️ in Jaipur, Rajasthan</p>
+    <p>© 2025 BagruParampara. All rights reserved. | Handcrafted with ❤️ in Jaipur, Rajasthan</p>
   </div>
 </footer>
 

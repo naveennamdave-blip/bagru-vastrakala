@@ -18,7 +18,7 @@ app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors());
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public"), { maxAge: "1h", etag: true }));
+app.use(express.static(path.join(__dirname, "public"), { maxAge: 0, etag: true }));
 
 // ─── PRODUCTS HELPERS ─────────────────────────────────────
 function loadProducts() {
@@ -79,7 +79,7 @@ app.post("/api/contact", async (req, res) => {
   if (transporter) {
     try {
       await transporter.sendMail({
-        from: `"Bagru Vastrakala" <${EMAIL_USER}>`,
+        from: `"BagruParampara" <${EMAIL_USER}>`,
         to:   EMAIL_USER,
         subject: `New Message from ${name}`,
         html: `<div style="font-family:sans-serif;max-width:600px">

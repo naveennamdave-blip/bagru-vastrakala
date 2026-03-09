@@ -52,9 +52,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 // =========================================================
 // PRODUCTS
 // =========================================================
+let currentFilter = "all";
+
 function renderProducts(filter) {
+  currentFilter = filter || currentFilter;
   const grid     = document.getElementById("productsGrid");
-  const filtered = filter === "all" ? products : products.filter(p => p.category === filter);
+  let filtered   = currentFilter === "all" ? [...products] : products.filter(p => p.category === currentFilter);
+
+  // Apply sort
+  const sort = document.getElementById("sortSelect")?.value || "default";
+  if (sort === "low-high")  filtered.sort((a, b) => a.price - b.price);
+  if (sort === "high-low")  filtered.sort((a, b) => b.price - a.price);
 
   if (filtered.length === 0) {
     grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:80px;color:var(--warm-gray);font-size:16px">
@@ -93,6 +101,10 @@ function renderProducts(filter) {
         </div>
       </div>`;
   }).join("");
+}
+
+function sortProducts() {
+  renderProducts(currentFilter);
 }
 
 function filterProducts(filter, btn) {
@@ -247,7 +259,7 @@ function checkout() {
   if (cart.length === 0) { showToast("Your cart is empty!"); return; }
   const total   = cart.reduce((s, i) => s + i.price * i.qty, 0);
   const lines   = cart.map(i => `• ${i.name} ×${i.qty} = ₹${(i.price * i.qty).toLocaleString("en-IN")}`).join("\n");
-  const message = `Hello Bagru Vastrakala! 🙏\n\nI'd like to place an order:\n\n${lines}\n\n*Total: ₹${total.toLocaleString("en-IN")}*\n\nPlease confirm availability and share payment/delivery details. Thank you!`;
+  const message = `Hello BagruParampara! 🙏\n\nI'd like to place an order:\n\n${lines}\n\n*Total: ₹${total.toLocaleString("en-IN")}*\n\nPlease confirm availability and share payment/delivery details. Thank you!`;
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
 }
 

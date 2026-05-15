@@ -26,9 +26,9 @@ cp .env.example .env           # Mac / Linux
 ### Step 3 — Configure Email (open `.env` file)
 
 ```env
-EMAIL_USER=naveennamdave@gmail.com
-EMAIL_PASS=kfqd nbkd tafz bhja     # Your Gmail App Password
-WHATSAPP_NUMBER=919376542891
+EMAIL_USER=na***********@gmail.com
+EMAIL_PASS=kfqd **** **** ****     # Your Gmail App Password
+WHATSAPP_NUMBER=9193***********
 ```
 
 **To get a Gmail App Password:**

@@ -179,5 +179,5 @@ bagru-vastrakala/
 
 ## 📞 Support
 
-WhatsApp: +91 9376542891  
-Email: naveennamdave@gmail.com
+WhatsApp: +91 93********  
+Email: na***********@gmail.com
